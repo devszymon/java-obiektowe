@@ -47,7 +47,7 @@ public class OknoGry extends JFrame {
         }
         add(panelPlanszy, BorderLayout.CENTER);
 
-        obszarLogow = new JTextArea(20, 25);
+        obszarLogow = new JTextArea(20, 45);
         obszarLogow.setEditable(false);
         obszarLogow.setFont(new Font("Monospaced", Font.PLAIN, 12));
         JScrollPane scrollLogow = new JScrollPane(obszarLogow);
