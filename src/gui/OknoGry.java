@@ -171,21 +171,12 @@ public class OknoGry extends JFrame {
     }
 
     private void obsluzKliecieWPole(int x, int y) {
-        // Ignoruj kliknięcie jeśli nie wybrano żadnego organizmu
         int wybranyIndeks = listaOrganizmow.getSelectedIndex();
         if (wybranyIndeks == 0) return;
-
-        // Zabezpieczenie: jeśli pole jest już zajęte, zablokuj możliwość postawienia.
-        // Aby zamiast blokady nastąpiło zastąpienie organizmu, usuń poniższy blok if
-        // i odkomentuj linię zabijającą istniejący organizm w sekcji poniżej.
         if (swiat.coZajmujePole(x, y) != null) {
             labelStatusu.setText("Pole (" + x + ", " + y + ") jest zajęte!");
             return;
         }
-
-        // Gdyby zastąpienie było pożądane, zamiast blokady powyżej można użyć:
-        // Organizm istniejacy = swiat.coZajmujePole(x, y);
-        // if (istniejacy != null) istniejacy.zabij();
 
         Organizm nowyOrganizm = stworzOrganizm(wybranyIndeks, x, y);
         if (nowyOrganizm != null) {
