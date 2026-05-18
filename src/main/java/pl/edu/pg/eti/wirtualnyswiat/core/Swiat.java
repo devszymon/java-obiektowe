@@ -1,6 +1,6 @@
 package core;
 
-import organizmy.Organizm;
+import core.Organizm;
 import java.util.ArrayList;
 import java.util.List;
 
