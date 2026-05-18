@@ -2,7 +2,7 @@ package gui;
 
 import core.Swiat;
 import core.Organizm;
-import organizmy.Czlowiek;
+import organizmy.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -15,6 +15,7 @@ public class OknoGry extends JFrame {
     private JTextArea obszarLogow;
     private JButton[][] polaSiatki;
     private JLabel labelStatusu;
+    private JComboBox<String> listaOrganizmow;
 
     public OknoGry(Swiat swiat) {
         this.swiat = swiat;
@@ -41,6 +42,8 @@ public class OknoGry extends JFrame {
                 przycisk.setMargin(new Insets(0, 0, 0, 0));
                 przycisk.setBackground(Color.WHITE);
                 przycisk.setFocusable(false);
+                final int fx = x, fy = y;
+                przycisk.addActionListener(e -> obsluzKliecieWPole(fx, fy));
                 polaSiatki[y][x] = przycisk;
                 panelPlanszy.add(przycisk);
             }
@@ -64,8 +67,19 @@ public class OknoGry extends JFrame {
             requestFocusInWindow();
         });
 
+        // Lista rozwijana do ręcznego umieszczania organizmów na planszy
+        String[] opcjeOrganizmow = {
+            "-- wybierz organizm --",
+            "Wilk", "Owca", "Lis", "Żółw", "Antylopa", "Człowiek",
+            "Trawa", "Mlecz", "Guarana", "Wilcze Jagody", "Barszcz Sosnowskiego"
+        };
+        listaOrganizmow = new JComboBox<>(opcjeOrganizmow);
+        listaOrganizmow.setFocusable(false);
+
         panelDolny.add(btnNowaTura);
         panelDolny.add(btnUmiejetnosc);
+        panelDolny.add(new JLabel("Dodaj organizm:"));
+        panelDolny.add(listaOrganizmow);
         add(panelDolny, BorderLayout.SOUTH);
 
         setFocusable(true);
@@ -153,6 +167,48 @@ public class OknoGry extends JFrame {
 
         if (swiat.getLogi().size() > 0) {
             swiat.getLogi().clear();
+        }
+    }
+
+    private void obsluzKliecieWPole(int x, int y) {
+        // Ignoruj kliknięcie jeśli nie wybrano żadnego organizmu
+        int wybranyIndeks = listaOrganizmow.getSelectedIndex();
+        if (wybranyIndeks == 0) return;
+
+        // Zabezpieczenie: jeśli pole jest już zajęte, zablokuj możliwość postawienia.
+        // Aby zamiast blokady nastąpiło zastąpienie organizmu, usuń poniższy blok if
+        // i odkomentuj linię zabijającą istniejący organizm w sekcji poniżej.
+        if (swiat.coZajmujePole(x, y) != null) {
+            labelStatusu.setText("Pole (" + x + ", " + y + ") jest zajęte!");
+            return;
+        }
+
+        // Gdyby zastąpienie było pożądane, zamiast blokady powyżej można użyć:
+        // Organizm istniejacy = swiat.coZajmujePole(x, y);
+        // if (istniejacy != null) istniejacy.zabij();
+
+        Organizm nowyOrganizm = stworzOrganizm(wybranyIndeks, x, y);
+        if (nowyOrganizm != null) {
+            swiat.dodajOrganizm(nowyOrganizm);
+            odswiezPlansze();
+            requestFocusInWindow();
+        }
+    }
+
+    private Organizm stworzOrganizm(int indeks, int x, int y) {
+        switch (indeks) {
+            case 1:  return new Wilk(x, y, swiat);
+            case 2:  return new Owca(x, y, swiat);
+            case 3:  return new Lis(x, y, swiat);
+            case 4:  return new Zolw(x, y, swiat);
+            case 5:  return new Antylopa(x, y, swiat);
+            case 6:  return new Czlowiek(x, y, swiat);
+            case 7:  return new Trawa(x, y, swiat);
+            case 8:  return new Mlecz(x, y, swiat);
+            case 9:  return new Guarana(x, y, swiat);
+            case 10: return new WilczeJagody(x, y, swiat);
+            case 11: return new BarszczSosnowskiego(x, y, swiat);
+            default: return null;
         }
     }
 }
