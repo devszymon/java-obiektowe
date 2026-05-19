@@ -1,8 +1,10 @@
 package core;
 
 import java.awt.Color;
+import java.io.Serializable;
 
-public abstract class Organizm {
+public abstract class Organizm implements Serializable {
+    private static final long serialVersionUID = 1L;
     protected int sila;
     protected int inicjatywa;
     protected int x, y;
