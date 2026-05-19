@@ -1,10 +1,17 @@
 package core;
 
 import core.Organizm;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Swiat {
+public class Swiat implements Serializable {
+    private static final long serialVersionUID = 1L;
     private int szerokosc, wysokosc;
     private List<Organizm> organizmy = new ArrayList<>();
     private List<Organizm> nowoNarodzone = new ArrayList<>();
@@ -81,5 +88,17 @@ public class Swiat {
 
         kierunekCzlowieka = -1;
         zazadanoUmiejetnosci = false;
+    }
+
+    public void zapiszDoPliku(String sciezka) throws IOException {
+        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(sciezka))) {
+            out.writeObject(this);
+        }
+    }
+
+    public static Swiat wczytajZPliku(String sciezka) throws IOException, ClassNotFoundException {
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(sciezka))) {
+            return (Swiat) in.readObject();
+        }
     }
 }

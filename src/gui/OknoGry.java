@@ -8,6 +8,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.File;
+import java.io.IOException;
 
 public class OknoGry extends JFrame {
     private Swiat swiat;
@@ -67,6 +69,12 @@ public class OknoGry extends JFrame {
             requestFocusInWindow();
         });
 
+        JButton btnZapisz = new JButton("Zapisz świat");
+        btnZapisz.addActionListener(e -> zapiszSwiatDoPliku());
+
+        JButton btnWczytaj = new JButton("Wczytaj świat");
+        btnWczytaj.addActionListener(e -> wczytajSwiatZPliku());
+
         // Lista rozwijana do ręcznego umieszczania organizmów na planszy
         String[] opcjeOrganizmow = {
             "-- wybierz organizm --",
@@ -78,6 +86,8 @@ public class OknoGry extends JFrame {
 
         panelDolny.add(btnNowaTura);
         panelDolny.add(btnUmiejetnosc);
+        panelDolny.add(btnZapisz);
+        panelDolny.add(btnWczytaj);
         panelDolny.add(new JLabel("Dodaj organizm:"));
         panelDolny.add(listaOrganizmow);
         add(panelDolny, BorderLayout.SOUTH);
@@ -200,6 +210,37 @@ public class OknoGry extends JFrame {
             case 10: return new WilczeJagody(x, y, swiat);
             case 11: return new BarszczSosnowskiego(x, y, swiat);
             default: return null;
+        }
+    }
+
+    private void zapiszSwiatDoPliku() {
+        JFileChooser chooser = new JFileChooser();
+        chooser.setDialogTitle("Zapisz stan świata");
+        int wynik = chooser.showSaveDialog(this);
+        if (wynik != JFileChooser.APPROVE_OPTION) return;
+
+        File plik = chooser.getSelectedFile();
+        try {
+            swiat.zapiszDoPliku(plik.getAbsolutePath());
+            labelStatusu.setText("Zapisano świat: " + plik.getName());
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(this, "Błąd zapisu: " + e.getMessage(), "Błąd", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void wczytajSwiatZPliku() {
+        JFileChooser chooser = new JFileChooser();
+        chooser.setDialogTitle("Wczytaj stan świata");
+        int wynik = chooser.showOpenDialog(this);
+        if (wynik != JFileChooser.APPROVE_OPTION) return;
+
+        File plik = chooser.getSelectedFile();
+        try {
+            Swiat nowySwiat = Swiat.wczytajZPliku(plik.getAbsolutePath());
+            SwingUtilities.invokeLater(() -> new OknoGry(nowySwiat));
+            dispose();
+        } catch (IOException | ClassNotFoundException e) {
+            JOptionPane.showMessageDialog(this, "Błąd odczytu: " + e.getMessage(), "Błąd", JOptionPane.ERROR_MESSAGE);
         }
     }
 }
